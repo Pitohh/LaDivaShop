@@ -1,45 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Heart } from 'lucide-react';
+import { productsService } from '../services/products.service';
 
 interface FeaturedProductsProps {
   onNavigate: (page: string) => void;
 }
 
 const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onNavigate }) => {
-  const products = [
-    {
-      id: 1,
-      name: "Kit Manucure Deluxe",
-      price: "25.000",
-      image: "https://images.pexels.com/photos/3997379/pexels-photo-3997379.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.9,
-      isNew: true
-    },
-    {
-      id: 2,
-      name: "Perruque Lace Front Premium",
-      price: "85.000",
-      image: "https://images.pexels.com/photos/3065171/pexels-photo-3065171.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.8,
-      isNew: false
-    },
-    {
-      id: 3,
-      name: "Huile Capillaire Naturelle",
-      price: "15.000",
-      image: "https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.7,
-      isNew: true
-    },
-    {
-      id: 4,
-      name: "Tissage Brésilien Virgin",
-      price: "120.000",
-      image: "https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 5.0,
-      isNew: false
-    }
-  ];
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await productsService.getAll();
+        setProducts(data.slice(0, 4));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 flex justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-vif"></div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-white relative">
@@ -124,7 +118,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onNavigate }) => {
                 {/* Price */}
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-montserrat font-bold text-2xl text-rose-vif">
-                    {product.price} FCFA
+                    {product.price.toLocaleString()} FCFA
                   </span>
                 </div>
 

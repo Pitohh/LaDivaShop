@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Grid, List, ChevronDown, Star, Heart, ShoppingCart, ArrowLeft } from 'lucide-react';
+import { productsService } from '../services/products.service';
+import { categoriesService } from '../services/categories.service';
 
 interface CatalogProps {
   onNavigate: (page: string) => void;
@@ -14,108 +16,50 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [categories, setCategories] = useState(['Tous']);
+  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
-  const categories = [
-    'Tous',
-    'Vernis à Ongles',
-    'Soins Capillaires',
-    'Perruques',
-    'Tissages',
-    'Accessoires',
-    'Maquillage'
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [categoriesData, productsData] = await Promise.all([
+          categoriesService.getAll(),
+          productsService.getAll()
+        ]);
+        setCategories(['Tous', ...categoriesData.map(c => c.name)]);
+        setAllProducts(productsData);
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const products = [
-    {
-      id: 1,
-      name: "Vernis Gel UV Rose Élégant",
-      price: 8500,
-      category: "Vernis à Ongles",
-      image: "https://images.pexels.com/photos/3997379/pexels-photo-3997379.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.9,
-      isNew: true,
-      inStock: true
-    },
-    {
-      id: 2,
-      name: "Perruque Lace Front Ondulée",
-      price: 95000,
-      category: "Perruques",
-      image: "https://images.pexels.com/photos/3065171/pexels-photo-3065171.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.8,
-      isNew: false,
-      inStock: true
-    },
-    {
-      id: 3,
-      name: "Huile Capillaire Argan Bio",
-      price: 18000,
-      category: "Soins Capillaires",
-      image: "https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.7,
-      isNew: true,
-      inStock: true
-    },
-    {
-      id: 4,
-      name: "Tissage Brésilien Lisse 22\"",
-      price: 125000,
-      category: "Tissages",
-      image: "https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 5.0,
-      isNew: false,
-      inStock: true
-    },
-    {
-      id: 5,
-      name: "Kit Manucure Professionnel",
-      price: 35000,
-      category: "Accessoires",
-      image: "https://images.pexels.com/photos/3997379/pexels-photo-3997379.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.6,
-      isNew: false,
-      inStock: true
-    },
-    {
-      id: 6,
-      name: "Shampoing Hydratant Karité",
-      price: 12000,
-      category: "Soins Capillaires",
-      image: "https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.5,
-      isNew: true,
-      inStock: false
-    },
-    {
-      id: 7,
-      name: "Perruque Bob Courte Naturelle",
-      price: 65000,
-      category: "Perruques",
-      image: "https://images.pexels.com/photos/3065171/pexels-photo-3065171.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.4,
-      isNew: false,
-      inStock: true
-    },
-    {
-      id: 8,
-      name: "Vernis French Manucure",
-      price: 6500,
-      category: "Vernis à Ongles",
-      image: "https://images.pexels.com/photos/3997379/pexels-photo-3997379.jpeg?auto=compress&cs=tinysrgb&w=400",
-      rating: 4.3,
-      isNew: false,
-      inStock: true
-    }
-  ];
+    fetchData();
+  }, []);
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'Tous' || product.category === selectedCategory;
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-    
-    return matchesSearch && matchesCategory && matchesPrice;
-  });
+  useEffect(() => {
+    const filterProducts = async () => {
+      try {
+        const filtered = await productsService.getAll({
+          search: searchTerm,
+          category: selectedCategory !== 'Tous' ? selectedCategory : undefined,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1]
+        });
+        setProducts(filtered);
+      } catch (error) {
+        console.error('Error filtering products:', error);
+      }
+    };
+
+    filterProducts();
+  }, [searchTerm, selectedCategory, priceRange]);
+
+  const filteredProducts = products;
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
@@ -372,7 +316,7 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                           Nouveau
                         </span>
                       )}
-                      {!product.inStock && (
+                      {product.stock === 0 && (
                         <span className="bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-montserrat font-semibold">
                           Rupture
                         </span>
@@ -387,10 +331,12 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
 
                   {/* Product Info */}
                   <div className="p-6 flex-1">
-                    {/* Category */}
-                    <span className="inline-block bg-rose-pale text-rose-vif px-3 py-1 rounded-full text-xs font-montserrat font-semibold mb-3">
-                      {product.category}
-                    </span>
+                    {/* Stock status */}
+                    {product.stock === 0 && (
+                      <span className="inline-block bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-montserrat font-semibold mb-3">
+                        Rupture de stock
+                      </span>
+                    )}
 
                     {/* Rating */}
                     <div className="flex items-center space-x-1 mb-3">
@@ -429,17 +375,17 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                       >
                         Voir le produit
                       </button>
-                      <button 
+                      <button
                         onClick={() => onNavigate('cart')}
-                        disabled={!product.inStock}
+                        disabled={product.stock === 0}
                         className={`flex-1 font-montserrat font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 ${
-                          product.inStock 
-                            ? 'bg-gradient-to-r from-dore to-dore-fonce text-white hover:shadow-lg' 
+                          product.stock > 0
+                            ? 'bg-gradient-to-r from-dore to-dore-fonce text-white hover:shadow-lg'
                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                       >
                         <ShoppingCart className="w-5 h-5" />
-                        <span>{product.inStock ? 'Ajouter' : 'Indisponible'}</span>
+                        <span>{product.stock > 0 ? 'Ajouter' : 'Indisponible'}</span>
                       </button>
                     </div>
                   </div>

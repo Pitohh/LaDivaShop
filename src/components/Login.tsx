@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Sparkles, Lock, Mail, ArrowRight, Heart } from 'lucide-react';
+import { authService } from '../services/auth.service';
 
 interface LoginProps {
   onNavigate: (page: string) => void;
@@ -16,13 +17,17 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login process
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      await authService.login({ email, password });
       onLogin(true);
       onNavigate('account');
-    }, 2000);
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Échec de la connexion. Vérifiez vos identifiants.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
