@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .watermarked {
+    position: relative;
+  }
+  
+  .watermarked::after {
+    content: "La Diva Shop";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-family: 'Great Vibes', cursive;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 10;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
-import HeroBanner from './components/HeroBanner';
+import Hero from './components/Hero';
 import FeaturedProducts from './components/FeaturedProducts';
 import Footer from './components/Footer';
 import Catalog from './components/Catalog';
@@ -20,7 +20,7 @@ function App() {
       case 'home':
         return (
           <>
-            <HeroBanner onNavigate={setCurrentPage} />
+            <Hero />
             <FeaturedProducts onNavigate={setCurrentPage} />
           </>
         );
@@ -41,7 +41,7 @@ function App() {
       default:
         return (
           <>
-            <HeroBanner onNavigate={setCurrentPage} />
+            <Hero />
             <FeaturedProducts onNavigate={setCurrentPage} />
           </>
         );

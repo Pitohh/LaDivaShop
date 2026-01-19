@@ -289,7 +289,7 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {/* Product Image */}
-                  <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}`}>
+                  <div className={`relative overflow-hidden watermarked ${viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}`}>
                     <img
                       src={product.images && product.images.length > 0 ? product.images[0] : '/placeholder.jpg'}
                       alt={product.name}
