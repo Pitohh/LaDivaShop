@@ -178,6 +178,35 @@ export const paymentsController = {
                     [orderId]
                 );
 
+                // =====================================================
+                // STOCK MANAGEMENT LOGIC (P0)
+                // =====================================================
+                try {
+                    // 1. Get order items
+                    const orderRes = await query('SELECT items FROM orders WHERE id = $1', [orderId]);
+                    if (orderRes.rows.length > 0) {
+                        const items = orderRes.rows[0].items; // JSONB array
+
+                        // 2. Loop and update stock for each item
+                        for (const item of items) {
+                            // item structure expected: { productId, quantity, ... }
+                            if (item.productId && item.quantity) {
+                                await query(
+                                    `UPDATE products 
+                                     SET stock = stock - $1, sales = sales + $1 
+                                     WHERE id = $2 AND stock >= $1`,
+                                    [item.quantity, item.productId]
+                                );
+                                console.log(`📉 Stock updated for product ${item.productId}: -${item.quantity}`);
+                            }
+                        }
+                    }
+                } catch (stockError) {
+                    console.error('❌ Error updating stock:', stockError);
+                    // We do not fail the request here because payment is already successful
+                    // Ideally we should log this to an "Admin Alert" system
+                }
+
                 console.log(`✅ Payment successful for order ${orderId}`);
             } else {
                 await query(
