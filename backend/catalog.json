@@ -1,0 +1,17 @@
+{
+    "source": "whatsapp_business",
+    "currency": "XAF",
+    "products": [
+        {
+            "external_id": "25783488994569304",
+            "name": "Texturisant et volumisant pour cheveux bouclés",
+            "description": "Produit capillaire pour définir et donner du volume aux cheveux bouclés.",
+            "images": [
+                "https://media.whatsapp.net/v/t61.24694-24/38202570_1021703648995388_4734898124898959360_n.jpg?ccb=11-4&oh=01_Q5AaIKzXyqZ5yZj9yZj9yZj9yZj9yZj9yZj9yZj9yZj9yZj9&oe=663E1234&_nc_sid=5e03e0&_nc_cat=104"
+            ],
+            "price": null,
+            "stock": 100,
+            "is_active": true
+        }
+    ]
+}

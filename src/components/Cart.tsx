@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Minus, Plus, X, ShoppingBag, Truck, Shield, Gift, Sparkles } from 'lucide-react';
+import PaymentModal from './PaymentModal';
 
 interface CartProps {
   onNavigate: (page: string) => void;
@@ -37,10 +38,10 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
   ]);
 
   const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string, discount: number, description: string } | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
-  const updateQuantity = (id, newQuantity) => {
+  const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity === 0) {
       removeItem(id);
       return;
@@ -52,7 +53,7 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
     );
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id: number) => {
     setCartItems(items => items.filter(item => item.id !== id));
   };
 
@@ -73,11 +74,16 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
   const total = subtotal + shippingCost - promoDiscount;
 
   const handleCheckout = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert('Redirection vers le paiement...');
-    }, 2000);
+    // Check if logged in here ideally
+    // For now we open modal directly to keep flow simpler as requested by user integration
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setIsPaymentModalOpen(false);
+    alert('Commande confirmée avec succès !');
+    // Clear cart or redirect
+    onNavigate('home');
   };
 
   if (cartItems.length === 0) {
@@ -91,7 +97,7 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
           <p className="font-montserrat text-gray-600 mb-8">
             Découvrez nos produits de beauté exceptionnels
           </p>
-          <button 
+          <button
             onClick={() => onNavigate('catalog')}
             className="bg-gradient-to-r from-rose-vif to-rose-poudre text-white font-montserrat font-semibold px-8 py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105"
           >
@@ -109,7 +115,7 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 onClick={() => onNavigate('catalog')}
                 className="flex items-center space-x-2 text-rose-vif hover:text-rose-vif/80 transition-colors font-montserrat"
               >
@@ -284,27 +290,13 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
               <div className="space-y-3">
                 <button
                   onClick={handleCheckout}
-                  disabled={isProcessing}
-                  className={`w-full font-montserrat font-semibold py-4 rounded-xl transition-all duration-300 transform flex items-center justify-center space-x-2 ${
-                    isProcessing
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-vert-emeraude to-vert-emeraude/80 text-white hover:shadow-xl hover:scale-105'
-                  }`}
+                  className="w-full font-montserrat font-semibold py-4 rounded-xl transition-all duration-300 transform flex items-center justify-center space-x-2 bg-gradient-to-r from-vert-emeraude to-vert-emeraude/80 text-white hover:shadow-xl hover:scale-105"
                 >
-                  {isProcessing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Traitement...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      <span>Passer à la caisse</span>
-                    </>
-                  )}
+                  <Sparkles className="w-5 h-5" />
+                  <span>Payer avec Mobile Money</span>
                 </button>
 
-                <button 
+                <button
                   onClick={() => onNavigate('catalog')}
                   className="w-full bg-transparent border-2 border-rose-vif text-rose-vif font-montserrat font-semibold py-3 rounded-xl hover:bg-rose-vif hover:text-white transition-all duration-300 transform hover:scale-105"
                 >
@@ -337,6 +329,14 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
           </div>
         </div>
       </div>
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        amount={total}
+        cartItems={cartItems}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };

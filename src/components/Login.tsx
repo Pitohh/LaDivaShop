@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Sparkles, Lock, Mail, ArrowRight, Heart } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, Lock, Phone, ArrowRight, Heart } from 'lucide-react';
 import { authService } from '../services/auth.service';
 
 interface LoginProps {
@@ -9,7 +9,7 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -19,12 +19,18 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
     setIsLoading(true);
 
     try {
-      await authService.login({ email, password });
+      const response = await authService.login({ phone, password });
       onLogin(true);
-      onNavigate('account');
+
+      // Redirect based on role
+      if (response.user.role === 'admin') {
+        onNavigate('admin');
+      } else {
+        onNavigate('account');
+      }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Échec de la connexion. Vérifiez vos identifiants.');
+      alert('Échec de la connexion. Vérifiez votre numéro et mot de passe.');
     } finally {
       setIsLoading(false);
     }
@@ -32,7 +38,7 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Image with Overlay */}
+      {/* ... (keep background elements same) ... */}
       <div className="absolute inset-0">
         <img
           src="https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1920"
@@ -61,7 +67,7 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
         <div className="w-full max-w-md">
           {/* Logo & Welcome */}
           <div className="text-center mb-8 animate-fade-in">
-            <div 
+            <div
               className="flex items-center justify-center space-x-3 mb-6 cursor-pointer"
               onClick={() => onNavigate('home')}
             >
@@ -81,18 +87,18 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
           {/* Login Form */}
           <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-rose-pale/50 p-8 animate-slide-up">
             <form onSubmit={handleLogin} className="space-y-6">
-              {/* Email Field */}
+              {/* Phone Field */}
               <div className="space-y-2">
                 <label className="block font-montserrat font-semibold text-gray-700">
-                  Adresse email
+                  Numéro de téléphone
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-rose-vif w-5 h-5" />
+                  <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-rose-vif w-5 h-5" />
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="votre@email.com"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="07000000"
                     className="w-full pl-12 pr-4 py-4 border-2 border-rose-pale rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-vif focus:border-transparent font-montserrat text-gray-800 placeholder-gray-500 bg-white/90 transition-all duration-300"
                     required
                   />
@@ -149,11 +155,10 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full font-montserrat font-bold py-4 rounded-2xl transition-all duration-300 transform flex items-center justify-center space-x-2 ${
-                  isLoading
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-vert-emeraude to-vert-emeraude/80 text-white hover:shadow-xl hover:scale-105 active:scale-95'
-                }`}
+                className={`w-full font-montserrat font-bold py-4 rounded-2xl transition-all duration-300 transform flex items-center justify-center space-x-2 ${isLoading
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-vert-emeraude to-vert-emeraude/80 text-white hover:shadow-xl hover:scale-105 active:scale-95'
+                  }`}
               >
                 {isLoading ? (
                   <>
@@ -183,6 +188,7 @@ const Login: React.FC<LoginProps> = ({ onNavigate, onLogin }) => {
               {/* Create Account Button */}
               <button
                 type="button"
+                onClick={() => onNavigate('register')}
                 className="w-full bg-transparent border-2 border-rose-pale text-rose-vif font-montserrat font-semibold py-4 rounded-2xl hover:bg-rose-pale hover:border-rose-vif transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
                 Créer un compte

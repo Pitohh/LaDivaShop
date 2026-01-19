@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 export interface Product {
   id: string;
@@ -30,176 +30,60 @@ export interface ProductFilters {
 }
 
 export const productsService = {
-  async getAll(filters?: ProductFilters) {
-    let query = supabase
-      .from('products')
-      .select('*, categories(name)')
-      .eq('is_active', true);
+  async getAll(filters?: ProductFilters): Promise<Product[]> {
+    try {
+      const queryParams = new URLSearchParams();
 
-    if (filters?.category && filters.category !== 'Tous') {
-      query = query.eq('categories.name', filters.category);
+      if (filters?.category) queryParams.append('category', filters.category);
+      if (filters?.search) queryParams.append('search', filters.search);
+      if (filters?.minPrice) queryParams.append('minPrice', filters.minPrice.toString());
+      if (filters?.maxPrice) queryParams.append('maxPrice', filters.maxPrice.toString());
+      if (filters?.inStock) queryParams.append('inStock', 'true');
+      if (filters?.isNew) queryParams.append('isNew', 'true');
+
+      const queryString = queryParams.toString();
+      const endpoint = queryString ? `/products?${queryString}` : '/products';
+
+      const products = await api.get(endpoint);
+      return products;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to fetch products');
     }
-
-    if (filters?.search) {
-      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
-    }
-
-    if (filters?.minPrice !== undefined) {
-      query = query.gte('price', filters.minPrice);
-    }
-
-    if (filters?.maxPrice !== undefined) {
-      query = query.lte('price', filters.maxPrice);
-    }
-
-    if (filters?.inStock) {
-      query = query.gt('stock', 0);
-    }
-
-    if (filters?.isNew) {
-      query = query.eq('is_new', true);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data.map(product => ({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      originalPrice: product.original_price,
-      categoryId: product.category_id,
-      stock: product.stock,
-      rating: product.rating,
-      reviewCount: product.review_count,
-      images: product.images,
-      features: product.features,
-      specifications: product.specifications,
-      isNew: product.is_new,
-      isActive: product.is_active,
-      sales: product.sales,
-      createdAt: product.created_at,
-      updatedAt: product.updated_at,
-    }));
   },
 
-  async getById(id: string) {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, categories(name)')
-      .eq('id', id)
-      .eq('is_active', true)
-      .maybeSingle();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (!data) {
+  async getById(id: string): Promise<Product | null> {
+    try {
+      const product = await api.get(`/products/${id}`);
+      return product;
+    } catch (error) {
+      console.error('Get product by ID error:', error);
       return null;
     }
-
-    return {
-      id: data.id,
-      name: data.name,
-      description: data.description,
-      price: data.price,
-      originalPrice: data.original_price,
-      categoryId: data.category_id,
-      stock: data.stock,
-      rating: data.rating,
-      reviewCount: data.review_count,
-      images: data.images,
-      features: data.features,
-      specifications: data.specifications,
-      isNew: data.is_new,
-      isActive: data.is_active,
-      sales: data.sales,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
   },
 
-  async create(product: Partial<Product>) {
-    const { data, error } = await supabase
-      .from('products')
-      .insert({
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        original_price: product.originalPrice,
-        category_id: product.categoryId,
-        stock: product.stock || 0,
-        images: product.images || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        is_new: product.isNew || false,
-        is_active: product.isActive !== undefined ? product.isActive : true,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data;
-  },
-
-  async update(id: string, product: Partial<Product>) {
-    const { data, error } = await supabase
-      .from('products')
-      .update({
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        original_price: product.originalPrice,
-        category_id: product.categoryId,
-        stock: product.stock,
-        images: product.images,
-        features: product.features,
-        specifications: product.specifications,
-        is_new: product.isNew,
-        is_active: product.isActive,
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data;
-  },
-
-  async delete(id: string) {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      throw new Error(error.message);
+  async create(product: Partial<Product>): Promise<Product> {
+    try {
+      const newProduct = await api.post('/products', product);
+      return newProduct;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to create product');
     }
   },
 
-  async updateStock(id: string, stock: number) {
-    const { data, error } = await supabase
-      .from('products')
-      .update({ stock })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
+  async update(id: string, product: Partial<Product>): Promise<Product> {
+    try {
+      const updatedProduct = await api.put(`/products/${id}`, product);
+      return updatedProduct;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to update product');
     }
+  },
 
-    return data;
+  async delete(id: string): Promise<void> {
+    try {
+      await api.delete(`/products/${id}`);
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to delete product');
+    }
   },
 };

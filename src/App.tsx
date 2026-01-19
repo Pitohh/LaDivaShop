@@ -7,6 +7,7 @@ import Catalog from './components/Catalog';
 import ProductDetail from './components/ProductDetail';
 import Cart from './components/Cart';
 import Login from './components/Login';
+import Register from './components/Register';
 import Account from './components/Account';
 import AdminDashboard from './components/AdminDashboard';
 
@@ -31,6 +32,8 @@ function App() {
         return <Cart onNavigate={setCurrentPage} />;
       case 'login':
         return <Login onNavigate={setCurrentPage} onLogin={setIsLoggedIn} />;
+      case 'register':
+        return <Register onNavigate={setCurrentPage} onLogin={setIsLoggedIn} />;
       case 'account':
         return <Account onNavigate={setCurrentPage} />;
       case 'admin':
@@ -47,9 +50,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header 
-        currentPage={currentPage} 
-        onNavigate={setCurrentPage} 
+      <Header
+        currentPage={currentPage}
+        onNavigate={setCurrentPage}
         isLoggedIn={isLoggedIn}
       />
       {renderPage()}

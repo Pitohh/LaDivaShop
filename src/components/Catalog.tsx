@@ -17,8 +17,8 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState(['Tous']);
-  const [products, setProducts] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +29,7 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
           productsService.getAll()
         ]);
         setCategories(['Tous', ...categoriesData.map(c => c.name)]);
-        setAllProducts(productsData);
+
         setProducts(productsData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,13 +80,7 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
   const startIndex = (currentPage - 1) * productsPerPage;
   const currentProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage);
 
-  const loadMore = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setCurrentPage(prev => prev + 1);
-      setIsLoading(false);
-    }, 1000);
-  };
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -94,7 +88,7 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
       <div className="bg-rose-pale/30 py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center space-x-2 text-sm font-montserrat">
-            <button 
+            <button
               onClick={() => onNavigate('home')}
               className="flex items-center space-x-1 text-rose-vif hover:text-rose-vif/80 transition-colors"
             >
@@ -143,11 +137,10 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
-                      className={`w-full text-left px-3 py-2 rounded-lg font-montserrat transition-all duration-300 ${
-                        selectedCategory === category
-                          ? 'bg-white text-rose-vif font-semibold'
-                          : 'hover:bg-white/20'
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded-lg font-montserrat transition-all duration-300 ${selectedCategory === category
+                        ? 'bg-white text-rose-vif font-semibold'
+                        : 'hover:bg-white/20'
+                        }`}
                     >
                       {category}
                     </button>
@@ -264,21 +257,19 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                   {sortedProducts.length} produit{sortedProducts.length > 1 ? 's' : ''} trouvé{sortedProducts.length > 1 ? 's' : ''}
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === 'grid' ? 'bg-rose-vif text-white' : 'bg-gray-100 text-gray-600'
-                  }`}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-rose-vif text-white' : 'bg-gray-100 text-gray-600'
+                    }`}
                 >
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === 'list' ? 'bg-rose-vif text-white' : 'bg-gray-100 text-gray-600'
-                  }`}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-rose-vif text-white' : 'bg-gray-100 text-gray-600'
+                    }`}
                 >
                   <List className="w-5 h-5" />
                 </button>
@@ -286,29 +277,26 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
             </div>
 
             {/* Products */}
-            <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' 
-                : 'grid-cols-1'
-            }`}>
+            <div className={`grid gap-6 ${viewMode === 'grid'
+              ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+              : 'grid-cols-1'
+              }`}>
               {currentProducts.map((product, index) => (
                 <div
                   key={product.id}
-                  className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-rose-pale/30 overflow-hidden animate-slide-up ${
-                    viewMode === 'list' ? 'flex' : ''
-                  }`}
+                  className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-rose-pale/30 overflow-hidden animate-slide-up ${viewMode === 'list' ? 'flex' : ''
+                    }`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {/* Product Image */}
                   <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}`}>
                     <img
-                      src={product.image}
+                      src={product.images && product.images.length > 0 ? product.images[0] : '/placeholder.jpg'}
                       alt={product.name}
-                      className={`object-cover group-hover:scale-110 transition-transform duration-500 ${
-                        viewMode === 'list' ? 'w-full h-full' : 'w-full h-64'
-                      }`}
+                      className={`object-cover group-hover:scale-110 transition-transform duration-500 ${viewMode === 'list' ? 'w-full h-full' : 'w-full h-64'
+                        }`}
                     />
-                    
+
                     {/* Badges */}
                     <div className="absolute top-4 left-4 flex flex-col space-y-2">
                       {product.isNew && (
@@ -343,11 +331,10 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? 'text-dore fill-current'
-                              : 'text-gray-300'
-                          }`}
+                          className={`w-4 h-4 ${i < Math.floor(product.rating)
+                            ? 'text-dore fill-current'
+                            : 'text-gray-300'
+                            }`}
                         />
                       ))}
                       <span className="text-sm text-gray-600 font-montserrat ml-2">
@@ -369,7 +356,7 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
 
                     {/* Buttons */}
                     <div className={`flex gap-3 ${viewMode === 'list' ? 'flex-col' : ''}`}>
-                      <button 
+                      <button
                         onClick={() => onNavigate('product')}
                         className="flex-1 bg-vert-emeraude text-white font-montserrat font-semibold py-3 rounded-xl hover:bg-vert-emeraude/90 transition-all duration-300 transform hover:scale-105"
                       >
@@ -378,11 +365,10 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                       <button
                         onClick={() => onNavigate('cart')}
                         disabled={product.stock === 0}
-                        className={`flex-1 font-montserrat font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 ${
-                          product.stock > 0
-                            ? 'bg-gradient-to-r from-dore to-dore-fonce text-white hover:shadow-lg'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
+                        className={`flex-1 font-montserrat font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 ${product.stock > 0
+                          ? 'bg-gradient-to-r from-dore to-dore-fonce text-white hover:shadow-lg'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
                       >
                         <ShoppingCart className="w-5 h-5" />
                         <span>{product.stock > 0 ? 'Ajouter' : 'Indisponible'}</span>
@@ -401,11 +387,10 @@ const Catalog: React.FC<CatalogProps> = ({ onNavigate }) => {
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i + 1)}
-                      className={`w-10 h-10 rounded-full font-montserrat font-semibold transition-all duration-300 ${
-                        currentPage === i + 1
-                          ? 'bg-gradient-to-r from-dore to-dore-fonce text-white shadow-lg'
-                          : 'bg-gray-100 text-gray-600 hover:bg-rose-pale'
-                      }`}
+                      className={`w-10 h-10 rounded-full font-montserrat font-semibold transition-all duration-300 ${currentPage === i + 1
+                        ? 'bg-gradient-to-r from-dore to-dore-fonce text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-600 hover:bg-rose-pale'
+                        }`}
                     >
                       {i + 1}
                     </button>

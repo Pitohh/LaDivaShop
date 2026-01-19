@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 export interface OrderItem {
   productId: string;
@@ -31,133 +31,54 @@ export interface Order {
 }
 
 export const ordersService = {
-  async getAll() {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw new Error(error.message);
+  async getAll(): Promise<Order[]> {
+    try {
+      const orders = await api.get('/orders');
+      return orders;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to fetch orders');
     }
-
-    return data.map(order => ({
-      id: order.id,
-      userId: order.user_id,
-      status: order.status,
-      totalAmount: order.total_amount,
-      items: order.items,
-      shippingAddress: order.shipping_address,
-      paymentMethod: order.payment_method,
-      paymentStatus: order.payment_status,
-      notes: order.notes,
-      createdAt: order.created_at,
-      updatedAt: order.updated_at,
-    }));
   },
 
-  async getById(id: string) {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (!data) {
+  async getById(id: string): Promise<Order | null> {
+    try {
+      const order = await api.get(`/orders/${id}`);
+      return order;
+    } catch (error) {
+      console.error('Get order by ID error:', error);
       return null;
     }
-
-    return {
-      id: data.id,
-      userId: data.user_id,
-      status: data.status,
-      totalAmount: data.total_amount,
-      items: data.items,
-      shippingAddress: data.shipping_address,
-      paymentMethod: data.payment_method,
-      paymentStatus: data.payment_status,
-      notes: data.notes,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
   },
 
-  async getByUserId(userId: string) {
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw new Error(error.message);
+  async create(order: Partial<Order>): Promise<Order> {
+    try {
+      const newOrder = await api.post('/orders', order);
+      return newOrder;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to create order');
     }
-
-    return data.map(order => ({
-      id: order.id,
-      userId: order.user_id,
-      status: order.status,
-      totalAmount: order.total_amount,
-      items: order.items,
-      shippingAddress: order.shipping_address,
-      paymentMethod: order.payment_method,
-      paymentStatus: order.payment_status,
-      notes: order.notes,
-      createdAt: order.created_at,
-      updatedAt: order.updated_at,
-    }));
   },
 
-  async create(order: Partial<Order>) {
-    const { data: { session } } = await supabase.auth.getSession();
+  async updateStatus(id: string, status: string, paymentStatus?: string): Promise<Order> {
+    try {
+      const updateData: any = { status };
+      if (paymentStatus) {
+        updateData.paymentStatus = paymentStatus;
+      }
 
-    if (!session) {
-      throw new Error('User not authenticated');
+      const updatedOrder = await api.put(`/orders/${id}`, updateData);
+      return updatedOrder;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to update order');
     }
-
-    const { data, error } = await supabase
-      .from('orders')
-      .insert({
-        user_id: session.user.id,
-        status: order.status || 'pending',
-        total_amount: order.totalAmount,
-        items: order.items,
-        shipping_address: order.shippingAddress,
-        payment_method: order.paymentMethod,
-        payment_status: order.paymentStatus || 'pending',
-        notes: order.notes,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data;
   },
 
-  async updateStatus(id: string, status: string, paymentStatus?: string) {
-    const updateData: any = { status };
-    if (paymentStatus) {
-      updateData.payment_status = paymentStatus;
+  async cancel(id: string): Promise<Order> {
+    try {
+      const canceledOrder = await api.post(`/orders/${id}/cancel`, {});
+      return canceledOrder;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to cancel order');
     }
-
-    const { data, error } = await supabase
-      .from('orders')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data;
   },
 };

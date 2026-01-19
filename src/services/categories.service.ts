@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 export interface Category {
   id: string;
@@ -10,97 +10,48 @@ export interface Category {
 }
 
 export const categoriesService = {
-  async getAll() {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('name');
-
-    if (error) {
-      throw new Error(error.message);
+  async getAll(): Promise<Category[]> {
+    try {
+      const categories = await api.get('/categories');
+      return categories;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to fetch categories');
     }
-
-    return data.map(category => ({
-      id: category.id,
-      name: category.name,
-      description: category.description,
-      isActive: category.is_active,
-      createdAt: category.created_at,
-      updatedAt: category.updated_at,
-    }));
   },
 
-  async getById(id: string) {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (!data) {
+  async getById(id: string): Promise<Category | null> {
+    try {
+      const category = await api.get(`/categories/${id}`);
+      return category;
+    } catch (error) {
+      console.error('Get category by ID error:', error);
       return null;
     }
-
-    return {
-      id: data.id,
-      name: data.name,
-      description: data.description,
-      isActive: data.is_active,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
   },
 
-  async create(category: Partial<Category>) {
-    const { data, error } = await supabase
-      .from('categories')
-      .insert({
-        name: category.name,
-        description: category.description || '',
-        is_active: category.isActive !== undefined ? category.isActive : true,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
+  async create(category: Partial<Category>): Promise<Category> {
+    try {
+      const newCategory = await api.post('/categories', category);
+      return newCategory;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to create category');
     }
-
-    return data;
   },
 
-  async update(id: string, category: Partial<Category>) {
-    const { data, error } = await supabase
-      .from('categories')
-      .update({
-        name: category.name,
-        description: category.description,
-        is_active: category.isActive,
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(error.message);
+  async update(id: string, category: Partial<Category>): Promise<Category> {
+    try {
+      const updatedCategory = await api.put(`/categories/${id}`, category);
+      return updatedCategory;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to update category');
     }
-
-    return data;
   },
 
-  async delete(id: string) {
-    const { error } = await supabase
-      .from('categories')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      throw new Error(error.message);
+  async delete(id: string): Promise<void> {
+    try {
+      await api.delete(`/categories/${id}`);
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Failed to delete category');
     }
   },
 };

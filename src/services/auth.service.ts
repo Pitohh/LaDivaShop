@@ -1,12 +1,13 @@
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/api';
 
 export interface LoginCredentials {
-  email: string;
+  phone: string;
   password: string;
 }
 
 export interface RegisterData {
-  email: string;
+  phone: string;
+  email?: string;
   password: string;
   firstName: string;
   lastName: string;
@@ -14,6 +15,7 @@ export interface RegisterData {
 
 export interface User {
   id: string;
+  phone: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -22,109 +24,66 @@ export interface User {
 
 export const authService = {
   async login(credentials: LoginCredentials) {
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: credentials.email,
-      password: credentials.password,
-    });
+    try {
+      const response = await api.post('/auth/login', credentials);
 
-    if (authError) {
-      throw new Error(authError.message);
+      // Store JWT token
+      if (response.token) {
+        api.setToken(response.token);
+      }
+
+      return {
+        user: response.user,
+        token: response.token
+      };
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Login failed');
     }
-
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', authData.user.id)
-      .maybeSingle();
-
-    if (profileError) {
-      throw new Error(profileError.message);
-    }
-
-    return {
-      user: profile ? {
-        id: profile.id,
-        email: profile.email,
-        firstName: profile.first_name,
-        lastName: profile.last_name,
-        role: profile.role,
-      } : null,
-      session: authData.session,
-    };
   },
 
   async register(data: RegisterData) {
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const response = await api.post('/auth/register', data);
 
-    if (authError) {
-      throw new Error(authError.message);
+      // Store JWT token
+      if (response.token) {
+        api.setToken(response.token);
+      }
+
+      return {
+        user: response.user,
+        token: response.token
+      };
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : 'Registration failed');
     }
-
-    if (!authData.user) {
-      throw new Error('Failed to create user');
-    }
-
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: authData.user.id,
-        email: data.email,
-        first_name: data.firstName,
-        last_name: data.lastName,
-        role: 'user',
-      });
-
-    if (profileError) {
-      throw new Error(profileError.message);
-    }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', authData.user.id)
-      .maybeSingle();
-
-    return {
-      user: profile ? {
-        id: profile.id,
-        email: profile.email,
-        firstName: profile.first_name,
-        lastName: profile.last_name,
-        role: profile.role,
-      } : null,
-      session: authData.session,
-    };
   },
 
   async logout() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      throw new Error(error.message);
+    try {
+      await api.post('/auth/logout', {});
+      // Remove JWT token
+      api.removeToken();
+    } catch (error) {
+      // Always remove token even if API call fails
+      api.removeToken();
+      throw new Error(error instanceof Error ? error.message : 'Logout failed');
     }
   },
 
-  async getCurrentUser() {
-    const { data: { session } } = await supabase.auth.getSession();
+  async getCurrentUser(): Promise<User | null> {
+    try {
+      const token = api.getToken();
+      if (!token) {
+        return null;
+      }
 
-    if (!session) {
+      const user = await api.get('/auth/me');
+      return user;
+    } catch (error) {
+      // If token is invalid, remove it
+      api.removeToken();
       return null;
     }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', session.user.id)
-      .maybeSingle();
-
-    return profile ? {
-      id: profile.id,
-      email: profile.email,
-      firstName: profile.first_name,
-      lastName: profile.last_name,
-      role: profile.role,
-    } : null;
   },
 };
