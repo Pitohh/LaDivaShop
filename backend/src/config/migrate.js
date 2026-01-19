@@ -40,6 +40,16 @@ async function runMigrations() {
         await query(productCatalogSQL);
         console.log('✅ Product catalog migration completed');
 
+        // Read and execute WhatsApp integration migration
+        const whatsappSQL = fs.readFileSync(
+            join(__dirname, '../../migrations/005_add_whatsapp_fields.sql'),
+            'utf8'
+        );
+
+        console.log('📝 Running WhatsApp integration migration (005)...');
+        await query(whatsappSQL);
+        console.log('✅ WhatsApp integration migration completed');
+
         console.log('🎉 All migrations completed successfully!');
         await pool.end();
     } catch (error) {
