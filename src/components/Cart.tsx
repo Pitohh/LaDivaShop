@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Minus, Plus, X, ShoppingBag, Truck, Shield, Gift, Sparkles } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, X, ShoppingBag, Truck, Shield, Gift, Sparkles, CreditCard, Wallet } from 'lucide-react';
 import PaymentModal from './PaymentModal';
 
 interface CartProps {
@@ -74,15 +74,12 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
   const total = subtotal + shippingCost - promoDiscount;
 
   const handleCheckout = () => {
-    // Check if logged in here ideally
-    // For now we open modal directly to keep flow simpler as requested by user integration
     setIsPaymentModalOpen(true);
   };
 
   const handlePaymentSuccess = () => {
     setIsPaymentModalOpen(false);
     alert('Commande confirmée avec succès !');
-    // Clear cart or redirect
     onNavigate('home');
   };
 
@@ -90,16 +87,16 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <ShoppingBag className="w-24 h-24 text-rose-pale mx-auto mb-6" />
-          <h2 className="font-great-vibes text-4xl text-vert-emeraude mb-4">
+          <ShoppingBag className="w-24 h-24 text-primary/20 mx-auto mb-6" />
+          <h2 className="font-heading text-4xl text-secondary mb-4">
             Votre panier est vide
           </h2>
-          <p className="font-montserrat text-gray-600 mb-8">
+          <p className="font-body text-gray-600 mb-8">
             Découvrez nos produits de beauté exceptionnels
           </p>
           <button
             onClick={() => onNavigate('catalog')}
-            className="bg-gradient-to-r from-rose-vif to-rose-poudre text-white font-montserrat font-semibold px-8 py-3 rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            className="btn-primary"
           >
             Continuer les achats
           </button>
@@ -109,102 +106,92 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-pale/20 to-white">
+    <div className="min-h-screen bg-white font-body">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-rose-pale/30">
-        <div className="container mx-auto px-4 py-6">
+      <div className="bg-white border-b border-gray-100">
+        <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => onNavigate('catalog')}
-                className="flex items-center space-x-2 text-rose-vif hover:text-rose-vif/80 transition-colors font-montserrat"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Continuer les achats</span>
-              </button>
-            </div>
-            <h1 className="font-great-vibes text-4xl text-vert-emeraude">
+            <h1 className="font-heading text-4xl text-secondary">
               Mon Panier
             </h1>
             <div className="flex items-center space-x-2 text-gray-600">
               <ShoppingBag className="w-5 h-5" />
-              <span className="font-montserrat">{cartItems.length} article{cartItems.length > 1 ? 's' : ''}</span>
+              <span className="font-semibold">{cartItems.length} article{cartItems.length > 1 ? 's' : ''}</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-12">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-6">
-            {cartItems.map((item, index) => (
+          <div className="lg:col-span-2 space-y-8">
+            {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl shadow-lg border border-rose-pale/30 p-6 animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="flex flex-col md:flex-row gap-6 pb-8 border-b border-gray-100 last:border-0"
               >
-                <div className="flex flex-col md:flex-row gap-6">
-                  {/* Product Image */}
-                  <div className="relative w-full md:w-32 h-32 flex-shrink-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover rounded-xl"
-                    />
-                    <span className="absolute -top-2 -right-2 bg-rose-pale text-rose-vif px-2 py-1 rounded-full text-xs font-montserrat font-semibold">
-                      {item.category}
-                    </span>
+                {/* Product Image */}
+                <div className="relative w-full md:w-32 h-32 flex-shrink-0">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                  <span className="absolute -top-2 -right-2 bg-background-pale text-primary px-2 py-1 rounded-full text-xs font-semibold">
+                    {item.category}
+                  </span>
+                </div>
+
+                {/* Product Info */}
+                <div className="flex-1 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-lg text-secondary mb-1">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Réf: {item.id.toString().padStart(4, '0')}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
 
-                  {/* Product Info */}
-                  <div className="flex-1 space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-montserrat font-semibold text-lg text-rose-vif mb-2">
-                          {item.name}
-                        </h3>
-                        <p className="font-montserrat text-sm text-gray-600">
-                          Prix unitaire : <span className="text-dore font-semibold">{item.price.toLocaleString()} FCFA</span>
-                        </p>
+                  <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
+                    {/* Quantity Control */}
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center border border-gray-200 rounded-lg">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-2 text-gray-500 hover:text-primary transition-colors"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="px-4 py-2 font-semibold text-secondary min-w-[3rem] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-2 text-gray-500 hover:text-primary transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="w-8 h-8 bg-rose-pale rounded-full flex items-center justify-center text-rose-vif hover:bg-rose-vif hover:text-white transition-all duration-300 group"
-                      >
-                        <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
-                      </button>
+                      <span className="text-sm text-gray-500">
+                        x {item.price.toLocaleString()} FCFA
+                      </span>
                     </div>
 
-                    {/* Quantity & Total */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                      <div className="flex items-center space-x-3">
-                        <span className="font-montserrat text-gray-700">Quantité :</span>
-                        <div className="flex items-center border border-rose-pale rounded-lg">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="p-2 text-rose-vif hover:bg-rose-pale transition-colors"
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="px-4 py-2 font-montserrat font-semibold text-gray-800 min-w-[3rem] text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="p-2 text-rose-vif hover:bg-rose-pale transition-colors"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="text-right">
-                        <p className="font-montserrat text-sm text-gray-600">Total</p>
-                        <p className="font-montserrat font-bold text-2xl text-vert-emeraude">
-                          {(item.price * item.quantity).toLocaleString()} FCFA
-                        </p>
-                      </div>
+                    {/* Total Item */}
+                    <div className="text-right">
+                      <p className="font-bold text-xl text-primary">
+                        {(item.price * item.quantity).toLocaleString()} FCFA
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -212,8 +199,8 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
             ))}
 
             {/* Promo Code */}
-            <div className="bg-white rounded-2xl shadow-lg border border-rose-pale/30 p-6">
-              <h3 className="font-montserrat font-semibold text-gray-800 mb-4 flex items-center">
+            <div className="bg-gray-50 rounded-2xl p-6">
+              <h3 className="font-semibold text-secondary mb-4 flex items-center">
                 <Gift className="w-5 h-5 text-dore mr-2" />
                 Code Promo
               </h3>
@@ -222,107 +209,99 @@ const Cart: React.FC<CartProps> = ({ onNavigate }) => {
                   type="text"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
-                  placeholder="Entrez votre code promo"
-                  className="flex-1 px-4 py-3 border border-rose-pale rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-vif focus:border-transparent font-montserrat"
+                  placeholder="Entrez votre code"
+                  className="input-couture flex-1 bg-transparent px-2"
                 />
                 <button
                   onClick={applyPromoCode}
-                  className="bg-gradient-to-r from-dore to-dore-fonce text-white font-montserrat font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="btn-secondary px-8 py-2 text-sm"
                 >
                   Appliquer
                 </button>
               </div>
               {appliedPromo && (
-                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="font-montserrat text-green-700 text-sm">
-                    ✓ Code <strong>{appliedPromo.code}</strong> appliqué : {appliedPromo.description}
-                  </p>
-                </div>
+                <p className="mt-3 text-sm text-green-600 font-medium">
+                  ✓ Code {appliedPromo.code} appliqué : {appliedPromo.description}
+                </p>
               )}
             </div>
+
+            <button
+              onClick={() => onNavigate('catalog')}
+              className="flex items-center space-x-2 text-gray-500 hover:text-primary transition-colors font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Continuer mes achats</span>
+            </button>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-rose-pale/30 to-white rounded-2xl shadow-lg border border-rose-pale/30 p-6 sticky top-8">
-              <h3 className="font-great-vibes text-3xl text-vert-emeraude mb-6 text-center">
-                Récapitulatif
+            <div className="bg-background-pale rounded-2xl p-8 sticky top-8">
+              <h3 className="font-heading text-2xl text-secondary mb-6">
+                Résumé de la commande
               </h3>
 
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between items-center font-montserrat">
-                  <span className="text-gray-700">Sous-total</span>
-                  <span className="font-semibold text-gray-800">{subtotal.toLocaleString()} FCFA</span>
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Sous-total</span>
+                  <span className="font-medium">{subtotal.toLocaleString()} FCFA</span>
                 </div>
 
-                <div className="flex justify-between items-center font-montserrat">
-                  <span className="text-gray-700">Livraison</span>
-                  <span className={`font-semibold ${shippingCost === 0 ? 'text-green-600' : 'text-gray-800'}`}>
-                    {shippingCost === 0 ? 'Gratuite' : `${shippingCost.toLocaleString()} FCFA`}
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Livraison</span>
+                  <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
+                    {shippingCost === 0 ? 'Offerte' : `${shippingCost.toLocaleString()} FCFA`}
                   </span>
                 </div>
 
                 {appliedPromo && (
-                  <div className="flex justify-between items-center font-montserrat">
-                    <span className="text-green-600">Réduction ({appliedPromo.code})</span>
-                    <span className="font-semibold text-green-600">-{promoDiscount.toLocaleString()} FCFA</span>
+                  <div className="flex justify-between items-center text-green-600">
+                    <span>Réduction</span>
+                    <span className="font-medium">-{promoDiscount.toLocaleString()} FCFA</span>
                   </div>
                 )}
 
-                <div className="border-t border-rose-pale/50 pt-4">
-                  <div className="flex justify-between items-center font-montserrat">
-                    <span className="text-lg font-semibold text-gray-800">Total</span>
-                    <span className="text-2xl font-bold text-dore">{total.toLocaleString()} FCFA</span>
+                <div className="border-t border-secondary/10 pt-4 mt-4">
+                  <div className="flex justify-between items-end">
+                    <span className="font-heading text-xl text-secondary">Total</span>
+                    <div className="text-right">
+                      <span className="block font-heading text-3xl text-primary font-bold">
+                        {total.toLocaleString()} <span className="text-base font-normal">FCFA</span>
+                      </span>
+                      <span className="text-xs text-gray-500">TVA incluse</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Shipping Info */}
-              {subtotal < 50000 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-                  <p className="font-montserrat text-blue-700 text-sm text-center">
-                    Ajoutez {(50000 - subtotal).toLocaleString()} FCFA pour la livraison gratuite !
-                  </p>
-                </div>
-              )}
+              <button
+                onClick={handleCheckout}
+                className="w-full btn-primary py-4 text-lg shadow-xl mb-6 flex items-center justify-center space-x-2"
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>Payer Maintenant</span>
+              </button>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <button
-                  onClick={handleCheckout}
-                  className="w-full font-montserrat font-semibold py-4 rounded-xl transition-all duration-300 transform flex items-center justify-center space-x-2 bg-gradient-to-r from-vert-emeraude to-vert-emeraude/80 text-white hover:shadow-xl hover:scale-105"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  <span>Payer avec Mobile Money</span>
-                </button>
-
-                <button
-                  onClick={() => onNavigate('catalog')}
-                  className="w-full bg-transparent border-2 border-rose-vif text-rose-vif font-montserrat font-semibold py-3 rounded-xl hover:bg-rose-vif hover:text-white transition-all duration-300 transform hover:scale-105"
-                >
-                  Continuer les achats
-                </button>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-rose-pale/30">
-                <div className="text-center">
-                  <div className="w-10 h-10 bg-vert-emeraude/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Truck className="w-5 h-5 text-vert-emeraude" />
-                  </div>
-                  <p className="font-montserrat text-xs text-gray-600">Livraison rapide</p>
+              {/* Payment Trust Signals */}
+              <div className="space-y-4">
+                <p className="text-center text-sm text-gray-500 font-medium">
+                  Paiement 100% Sécurisé via PVit
+                </p>
+                <div className="flex justify-center items-center space-x-4 grayscale opacity-70">
+                  {/* Logos placeholders - representing Visa, Airtel, Moov */}
+                  <div className="h-8 bg-white border border-gray-200 rounded px-2 flex items-center font-bold text-xs text-blue-800">VISA</div>
+                  <div className="h-8 bg-white border border-gray-200 rounded px-2 flex items-center font-bold text-xs text-red-600">Airtel</div>
+                  <div className="h-8 bg-white border border-gray-200 rounded px-2 flex items-center font-bold text-xs text-orange-500">Moov</div>
                 </div>
-                <div className="text-center">
-                  <div className="w-10 h-10 bg-dore/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Shield className="w-5 h-5 text-dore" />
+
+                <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 pt-4 border-t border-secondary/5">
+                  <div className="flex items-center">
+                    <Shield className="w-3 h-3 mr-1" /> SSL Sécurisé
                   </div>
-                  <p className="font-montserrat text-xs text-gray-600">Paiement sécurisé</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-10 h-10 bg-rose-vif/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Gift className="w-5 h-5 text-rose-vif" />
+                  <div className="flex items-center">
+                    <Truck className="w-3 h-3 mr-1" /> Livraison 24h
                   </div>
-                  <p className="font-montserrat text-xs text-gray-600">Emballage soigné</p>
                 </div>
               </div>
             </div>

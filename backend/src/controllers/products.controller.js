@@ -9,7 +9,7 @@ export const productsController = {
             let sql = `
         SELECT p.*, c.name as category_name,
         (
-            SELECT COALESCE(json_agg(pi.image_url ORDER BY pi.position), '[]'::json)
+            SELECT json_agg(pi.image_url ORDER BY pi.position)
             FROM product_images pi
             WHERE pi.product_id = p.id
         ) as product_images_list
@@ -92,7 +92,7 @@ export const productsController = {
             const result = await query(
                 `SELECT p.*, c.name as category_name,
          (
-            SELECT COALESCE(json_agg(pi.image_url ORDER BY pi.position), '[]'::json)
+            SELECT json_agg(pi.image_url ORDER BY pi.position)
             FROM product_images pi
             WHERE pi.product_id = p.id
          ) as product_images_list
