@@ -50,7 +50,7 @@ export const productsService = {
       const endpoint = queryString ? `/products?${queryString}` : '/products';
 
       const products = await api.get(endpoint);
-      return products;
+      return Array.isArray(products) ? products : [];
     } catch (error) {
       console.warn('⚠️ API fetch failed, falling back to MOCK DATA for verification.', error);
 

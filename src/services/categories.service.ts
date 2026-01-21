@@ -13,7 +13,7 @@ export const categoriesService = {
   async getAll(): Promise<Category[]> {
     try {
       const categories = await api.get('/categories');
-      return categories;
+      return Array.isArray(categories) ? categories : [];
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : 'Failed to fetch categories');
     }
