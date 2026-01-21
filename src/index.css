@@ -2,11 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply font-body text-secondary;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-secondary;
+  }
+}
+
 @layer components {
+
+  /* Watermark for product images */
   .watermarked {
     position: relative;
   }
-  
+
   .watermarked::after {
     content: "La Diva Shop";
     position: absolute;
@@ -20,5 +37,33 @@
     white-space: nowrap;
     z-index: 10;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Couture Input Style - Bottom border only */
+  .input-couture {
+    @apply w-full px-0 py-3 bg-transparent border-0 border-b-2 border-gray-300 focus:border-secondary focus:outline-none focus:ring-0 transition-colors duration-300 font-body text-secondary;
+  }
+
+  .input-couture:focus {
+    border-bottom-width: 3px;
+  }
+
+  /* Primary CTA Button */
+  .btn-primary {
+    @apply bg-primary text-white font-semibold px-6 py-3 rounded-full hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply bg-secondary text-white font-semibold px-6 py-3 rounded-full hover:bg-secondary-dark transition-all duration-300;
+  }
+
+  /* Pill Button (for variants) */
+  .btn-pill {
+    @apply px-4 py-2 rounded-full border-2 border-gray-300 text-gray-700 font-medium transition-all duration-200 hover:border-secondary;
+  }
+
+  .btn-pill.active {
+    @apply bg-secondary text-white border-secondary;
   }
 }
