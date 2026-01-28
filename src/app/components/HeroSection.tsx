@@ -1,4 +1,5 @@
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
+import content from '@/data/content.json';
 
 interface HeroSectionProps {
   imageUrl: string;
@@ -34,20 +35,20 @@ export function HeroSection({ imageUrl, onNavigate }: HeroSectionProps) {
           className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white mb-3 sm:mb-4 md:mb-6 max-w-4xl leading-tight"
           style={{ fontFamily: 'var(--font-serif)' }}
         >
-          Révélez votre Éclat
+          {content.home.hero.title}
         </h1>
         <p
           className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-6 md:mb-8 max-w-xs sm:max-w-lg lg:max-w-2xl"
           style={{ fontFamily: 'var(--font-sans)' }}
         >
-          Perruques & Mèches Premium pour la Femme Moderne
+          {content.home.hero.subtitle}
         </p>
         <button
           onClick={() => onNavigate?.('catalog')}
           className="bg-[#064E3B] text-white px-6 sm:px-8 md:px-10 lg:px-12 py-3 md:py-4 hover:bg-[#064E3B]/90 transition-colors rounded-sm text-sm sm:text-base lg:text-lg font-medium min-w-[200px] sm:min-w-[240px]"
           style={{ fontFamily: 'var(--font-sans)' }}
         >
-          COMMANDER MAINTENANT
+          {content.home.hero.cta}
         </button>
       </div>
     </section>

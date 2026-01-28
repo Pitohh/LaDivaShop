@@ -1,4 +1,5 @@
 import { Search, User, ShoppingBag } from 'lucide-react';
+import content from '@/data/content.json';
 
 interface HeaderProps {
   onNavigate?: (page: string, data?: any) => void;
@@ -27,7 +28,7 @@ export function Header({ onNavigate, currentPage = 'home' }: HeaderProps) {
             className="text-[#D63384] hover:text-[#064E3B] transition-colors text-sm lg:text-base"
             style={{ fontFamily: 'var(--font-sans)' }}
           >
-            Just Dropped ✨
+            {content.navigation.new_arrivals}
           </button>
           <button
             onClick={() => onNavigate?.('catalog', { category: 'Perruques' })}
@@ -71,7 +72,7 @@ export function Header({ onNavigate, currentPage = 'home' }: HeaderProps) {
           <button
             onClick={() => onNavigate?.('cart')}
             className="text-[#D63384] hover:text-[#064E3B] transition-colors relative p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label="Panier"
+            aria-label={content.navigation.cart}
           >
             <ShoppingBag size={20} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
             <span className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-[#064E3B] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">

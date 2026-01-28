@@ -1,4 +1,5 @@
 import { Home, Search, ShoppingBag, User } from 'lucide-react';
+import content from '@/data/content.json';
 
 interface BottomNavProps {
   onNavigate?: (page: string) => void;
@@ -12,11 +13,11 @@ export function BottomNav({ onNavigate, currentPage = 'home' }: BottomNavProps) 
         <button
           onClick={() => onNavigate?.('home')}
           className={`flex flex-col items-center gap-0.5 sm:gap-1 ${currentPage === 'home' ? 'text-[#D63384]' : 'text-[#D63384]/60'} active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors`}
-          aria-label="Accueil"
+          aria-label={content.navigation.home}
         >
           <Home size={22} className="sm:w-6 sm:h-6" />
           <span className="text-[10px] sm:text-xs" style={{ fontFamily: 'var(--font-sans)' }}>
-            Accueil
+            {content.navigation.home}
           </span>
         </button>
 
@@ -34,7 +35,7 @@ export function BottomNav({ onNavigate, currentPage = 'home' }: BottomNavProps) 
         <button
           onClick={() => onNavigate?.('cart')}
           className={`flex flex-col items-center gap-0.5 sm:gap-1 ${currentPage === 'cart' ? 'text-[#D63384]' : 'text-[#D63384]/60'} active:text-[#064E3B] relative min-w-[60px] min-h-[52px] justify-center transition-colors`}
-          aria-label="Panier"
+          aria-label={content.navigation.cart}
         >
           <div className="relative">
             <ShoppingBag size={24} className="sm:w-7 sm:h-7" strokeWidth={2.5} />
@@ -43,7 +44,7 @@ export function BottomNav({ onNavigate, currentPage = 'home' }: BottomNavProps) 
             </span>
           </div>
           <span className="text-[10px] sm:text-xs" style={{ fontFamily: 'var(--font-sans)' }}>
-            Panier
+            {content.navigation.cart}
           </span>
         </button>
 

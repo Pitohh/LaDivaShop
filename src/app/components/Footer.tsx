@@ -1,4 +1,5 @@
 import { Instagram, Facebook, Mail } from 'lucide-react';
+import content from '@/data/content.json';
 
 interface FooterProps {
   onNavigate?: (page: string, data?: any) => void;
@@ -9,19 +10,18 @@ export function Footer({ onNavigate }: FooterProps) {
     <footer className="w-full bg-[#D63384] text-white py-10 sm:py-12 lg:py-14 px-4 pb-20 sm:pb-24 md:pb-12">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
-          {/* Brand */}
           <div>
             <h3
               className="text-xl sm:text-2xl mb-3 sm:mb-4"
               style={{ fontFamily: 'var(--font-serif)' }}
             >
-              LA DIVA
+              {content.brand.name}
             </h3>
             <p
               className="text-white/70 text-xs sm:text-sm"
               style={{ fontFamily: 'var(--font-sans)' }}
             >
-              Votre destination beauté premium au Gabon
+              {content.footer.about_text}
             </p>
           </div>
 

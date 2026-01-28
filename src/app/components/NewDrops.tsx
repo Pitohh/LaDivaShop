@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 import { Plus } from 'lucide-react';
+import content from '@/data/content.json';
 
 interface Product {
   id: string;
@@ -80,13 +81,13 @@ export function NewDrops({ onNavigate }: NewDropsProps) {
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#D63384] mb-2"
             style={{ fontFamily: 'var(--font-serif)' }}
           >
-            JUST DROPPED ✨
+            {content.home.featured.title}
           </h2>
           <p
             className="text-[#D63384]/70 text-sm sm:text-base"
             style={{ fontFamily: 'var(--font-sans)' }}
           >
-            Découvrez nos dernières exclusivités
+            {content.home.featured.subtitle}
           </p>
         </div>
 
