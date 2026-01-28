@@ -2,9 +2,10 @@ import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 
 interface HeroSectionProps {
   imageUrl: string;
+  onNavigate?: (page: string) => void;
 }
 
-export function HeroSection({ imageUrl }: HeroSectionProps) {
+export function HeroSection({ imageUrl, onNavigate }: HeroSectionProps) {
   return (
     <section className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-[85vh] overflow-hidden">
       {/* Background Image */}
@@ -42,6 +43,7 @@ export function HeroSection({ imageUrl }: HeroSectionProps) {
           Perruques & Mèches Premium pour la Femme Moderne
         </p>
         <button
+          onClick={() => onNavigate?.('catalog')}
           className="bg-[#064E3B] text-white px-6 sm:px-8 md:px-10 lg:px-12 py-3 md:py-4 hover:bg-[#064E3B]/90 transition-colors rounded-sm text-sm sm:text-base lg:text-lg font-medium min-w-[200px] sm:min-w-[240px]"
           style={{ fontFamily: 'var(--font-sans)' }}
         >

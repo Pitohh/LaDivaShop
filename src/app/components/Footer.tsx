@@ -1,6 +1,10 @@
 import { Instagram, Facebook, Mail } from 'lucide-react';
 
-export function Footer() {
+interface FooterProps {
+  onNavigate?: (page: string, data?: any) => void;
+}
+
+export function Footer({ onNavigate }: FooterProps) {
   return (
     <footer className="w-full bg-[#D63384] text-white py-10 sm:py-12 lg:py-14 px-4 pb-20 sm:pb-24 md:pb-12">
       <div className="max-w-7xl mx-auto">
@@ -30,10 +34,10 @@ export function Footer() {
               Boutique
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm text-white/70">
-              <li><a href="#" className="hover:text-white transition-colors">Nouveautés</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Perruques</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Mèches</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Soins Capillaires</a></li>
+              <li><button onClick={() => onNavigate?.('catalog', { category: null })} className="hover:text-white transition-colors">Just Dropped ✨</button></li>
+              <li><button onClick={() => onNavigate?.('catalog', { category: 'Perruques' })} className="hover:text-white transition-colors">Perruques</button></li>
+              <li><button onClick={() => onNavigate?.('catalog', { category: 'Onglerie' })} className="hover:text-white transition-colors">Ongles</button></li>
+              <li><button onClick={() => onNavigate?.('catalog', { category: 'Soins des Cheveux' })} className="hover:text-white transition-colors">Soins Capillaires</button></li>
             </ul>
           </div>
 

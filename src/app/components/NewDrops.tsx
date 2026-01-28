@@ -10,7 +10,11 @@ interface Product {
   isNew?: boolean;
 }
 
-export function NewDrops() {
+interface NewDropsProps {
+  onNavigate?: (page: string, data?: any) => void;
+}
+
+export function NewDrops({ onNavigate }: NewDropsProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,7 +80,7 @@ export function NewDrops() {
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#D63384] mb-2"
             style={{ fontFamily: 'var(--font-serif)' }}
           >
-            NOUVEAUX ARRIVAGES
+            JUST DROPPED ✨
           </h2>
           <p
             className="text-[#D63384]/70 text-sm sm:text-base"
@@ -93,7 +97,10 @@ export function NewDrops() {
               key={product.id}
               className="flex-none w-[70vw] sm:w-[60vw] md:w-auto snap-start"
             >
-              <div className="bg-[#F9FAFB] rounded-sm overflow-hidden group cursor-pointer h-full">
+              <div
+                className="bg-[#F9FAFB] rounded-sm overflow-hidden group cursor-pointer h-full"
+                onClick={() => onNavigate?.('product', { productId: product.id })}
+              >
                 {/* Image Container */}
                 <div className="relative aspect-[3/4] overflow-hidden">
                   <ImageWithFallback

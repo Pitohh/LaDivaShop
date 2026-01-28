@@ -1,11 +1,17 @@
 import { Home, Search, ShoppingBag, User } from 'lucide-react';
 
-export function BottomNav() {
+interface BottomNavProps {
+  onNavigate?: (page: string) => void;
+  currentPage?: string;
+}
+
+export function BottomNav({ onNavigate, currentPage = 'home' }: BottomNavProps) {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 safe-area-inset-bottom">
       <div className="flex items-center justify-around px-2 sm:px-4 py-2 sm:py-3">
         <button
-          className="flex flex-col items-center gap-0.5 sm:gap-1 text-[#D63384] active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors"
+          onClick={() => onNavigate?.('home')}
+          className={`flex flex-col items-center gap-0.5 sm:gap-1 ${currentPage === 'home' ? 'text-[#D63384]' : 'text-[#D63384]/60'} active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors`}
           aria-label="Accueil"
         >
           <Home size={22} className="sm:w-6 sm:h-6" />
@@ -15,7 +21,8 @@ export function BottomNav() {
         </button>
 
         <button
-          className="flex flex-col items-center gap-0.5 sm:gap-1 text-[#D63384]/60 active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors"
+          onClick={() => onNavigate?.('catalog')}
+          className={`flex flex-col items-center gap-0.5 sm:gap-1 ${currentPage === 'catalog' ? 'text-[#D63384]' : 'text-[#D63384]/60'} active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors`}
           aria-label="Rechercher"
         >
           <Search size={22} className="sm:w-6 sm:h-6" />
@@ -25,7 +32,8 @@ export function BottomNav() {
         </button>
 
         <button
-          className="flex flex-col items-center gap-0.5 sm:gap-1 text-[#D63384]/60 active:text-[#064E3B] relative min-w-[60px] min-h-[52px] justify-center transition-colors"
+          onClick={() => onNavigate?.('cart')}
+          className={`flex flex-col items-center gap-0.5 sm:gap-1 ${currentPage === 'cart' ? 'text-[#D63384]' : 'text-[#D63384]/60'} active:text-[#064E3B] relative min-w-[60px] min-h-[52px] justify-center transition-colors`}
           aria-label="Panier"
         >
           <div className="relative">
@@ -40,7 +48,8 @@ export function BottomNav() {
         </button>
 
         <button
-          className="flex flex-col items-center gap-0.5 sm:gap-1 text-[#D63384]/60 active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors"
+          onClick={() => onNavigate?.('account')}
+          className={`flex flex-col items-center gap-0.5 sm:gap-1 ${currentPage === 'account' ? 'text-[#D63384]' : 'text-[#D63384]/60'} active:text-[#064E3B] min-w-[60px] min-h-[52px] justify-center transition-colors`}
           aria-label="Mon compte"
         >
           <User size={22} className="sm:w-6 sm:h-6" />
