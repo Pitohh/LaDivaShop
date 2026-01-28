@@ -81,13 +81,13 @@ export function NewDrops({ onNavigate }: NewDropsProps) {
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#D63384] mb-2"
             style={{ fontFamily: 'var(--font-serif)' }}
           >
-            {content.home.featured.title}
+            {content.home.sections.new_drops.title}
           </h2>
           <p
             className="text-[#D63384]/70 text-sm sm:text-base"
             style={{ fontFamily: 'var(--font-sans)' }}
           >
-            {content.home.featured.subtitle}
+            {content.home.sections.new_drops.subtitle}
           </p>
         </div>
 

@@ -15,26 +15,29 @@
             "subtitle": "Une collection exclusive de Raw Hair, de soins précieux et d'onglerie fine. Parce que vous méritez l'exception.",
             "cta": "Découvrir la Collection"
         },
-        "categories": {
+        "sections": {
+            "new_drops": {
+                "title": "Les Inédits",
+                "subtitle": "Soyez la première à les porter."
+            },
             "wigs": {
+                "id": "wigs",
                 "title": "L'Art Capillaire",
                 "subtitle": "Raw Hair & Silk",
                 "description": "Du Bone Straight miroir au Raw Hair authentique. Une fluidité absolue."
             },
             "nails": {
+                "id": "nails",
                 "title": "Signature des Mains",
                 "subtitle": "Onglerie Fine",
                 "description": "L'élégance jusqu'au bout des doigts. Finition salon, chez vous."
             },
-            "accessories": {
+            "care": {
+                "id": "care",
                 "title": "Rituels de Soin",
-                "subtitle": "Les Indispensables",
+                "subtitle": "La Touche Finale",
                 "description": "Sublimez, fixez, brillez. Les secrets d'une pose parfaite."
             }
-        },
-        "featured": {
-            "title": "Les Inédits",
-            "subtitle": "Soyez la première à les porter."
         }
     },
     "product": {
@@ -54,11 +57,6 @@
         "empty": "Votre écrin est vide pour le moment.",
         "subtotal": "Total Précieux",
         "checkout_btn": "Sécuriser mes Trésors",
-        "security_msg": "Un paiement sécurisé pour une livraison sereine."
-    },
-    "footer": {
-        "about_title": "L'Excellence",
-        "about_text": "La Diva incarne le luxe organique. Des matières nobles, sélectionnées pour révéler votre véritable essence.",
-        "contact": "Service Conciergerie"
+        "security_msg": "Paiement sécurisé. Livraison soignée."
     }
 }
